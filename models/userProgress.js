@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config');
-const User = require('./User'); // Adjust the path as necessary
 
 const UserProgress = sequelize.define('UserProgress', {
     // userId: { // Add this line
