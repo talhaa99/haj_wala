@@ -4,8 +4,8 @@ const userRoutes = require('./routes/user');
 const app = express();
 
 app.get('/', (req, res) => {
-    res.send('Cannot Get!');
-    
+    res.send('Hello, World!');
+
 });
 app.use(express.json());
 app.use('/api', userRoutes);
