@@ -3,6 +3,20 @@ const {sendErrorResponse} = require('../helpers/response');
 const ThrowError = require('../helpers/ThrowError');
 const UserProgress = require("../models/userProgress");
 
+// exports.register = async (req, res) => {
+//     try {
+//         const {userName} = req.body;
+//         if (!userName) {
+//             throw new ThrowError('userName is required', 400);
+//         }
+//
+//         // Call the register function from the service with the provided userName
+//         const result = await register(userName);
+//         res.json(result);
+//     } catch (error) {
+//         sendErrorResponse(res, error);
+//     }
+// };
 exports.register = async (req, res) => {
     try {
         const {userName} = req.body;
@@ -18,7 +32,8 @@ exports.register = async (req, res) => {
     }
 };
 exports.updateScore = async (req, res) => {
-    const {userName, score, mode} = req.body;
+
+    const {userName, mode, score} = req.body;
 
     try {
         if (!(userName && score && mode)) {
@@ -32,24 +47,53 @@ exports.updateScore = async (req, res) => {
         sendErrorResponse(res, error);
     }
 };
+// exports.leaderBoard = async (req, res) => {
+//     try {
+//         let limit = req.query.limit;
+//         let mode = req.query.mode;
+//         limit = parseInt(limit) || 20;
+//
+//         if (!mode) {
+//             throw new ThrowError('Mode is  required', 400);
+//         }
+//         // Call the service function to retrieve the top scores based on the provided number of entries
+//         const leaderboard = await UserProgress.findAll({
+//             attributes: ['userName', 'score', 'mode'],
+//             where: {mode}, // Filter by mode
+//             order: [['score', 'DESC']],
+//             limit: limit,
+//         });
+//         // Return the retrieved scores as a response
+//         res.json({success: true, message: 'LeaderBoard fetched successfully', leaderboard});
+//     } catch (error) {
+//         sendErrorResponse(res, error);
+//     }
+// };
 exports.leaderBoard = async (req, res) => {
     try {
-        let limit = req.query.limit;
-        let mode = req.query.mode;
+        let { limit, mode } = req.query;
         limit = parseInt(limit) || 20;
+        mode = parseInt(mode);
 
         if (!mode) {
-            throw new ThrowError('Mode is  required', 400);
+            throw new ThrowError('Mode is required', 400);
         }
-        // Call the service function to retrieve the top scores based on the provided number of entries
+
+        const modeForLeaderboard = `mode${mode}Score`;
+
+        // Fetch the leaderboard for the specified mode
         const leaderboard = await UserProgress.findAll({
-            attributes: ['userName', 'score', 'mode'],
-            where: {mode}, // Filter by mode
-            order: [['score', 'DESC']],
+            attributes: ['userName', [modeForLeaderboard, 'score']], // Dynamic column alias as 'score'
+            order: [[modeForLeaderboard, 'DESC']], // Order by the dynamic mode score
             limit: limit,
         });
-        // Return the retrieved scores as a response
-        res.json({success: true, message: 'LeaderBoard fetched successfully', leaderboard});
+
+        // Return the retrieved leaderboard as a response
+        res.json({
+            success: true,
+            message: 'LeaderBoard fetched successfully',
+            leaderboard
+        });
     } catch (error) {
         sendErrorResponse(res, error);
     }
