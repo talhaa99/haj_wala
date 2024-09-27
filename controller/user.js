@@ -51,10 +51,10 @@ exports.leaderBoard = async (req, res) => {
         const modes = [`${baseMode}a`, `${baseMode}b`, `${baseMode}c`];
 
         // Initialize an object to hold the leaderboards for each mode
-        const data = {
-            [`leaderboard${baseMode}a`]: [],
-            [`leaderboard${baseMode}b`]: [],
-            [`leaderboard${baseMode}c`]: [],
+        const leaderboards = {
+            [`${baseMode}a`]: [],
+            [`${baseMode}b`]: [],
+            [`${baseMode}c`]: [],
         };
 
         // Fetch leaderboard for each mode
@@ -76,13 +76,13 @@ exports.leaderBoard = async (req, res) => {
             }));
 
             // Store the formatted leaderboard in the respective array
-            data[`leaderboard${m}`]= formattedLeaderboard;
+            leaderboards[m]= formattedLeaderboard;
         }
 
         res.json({
             success: true,
             message: 'LeaderBoards fetched successfully',
-            data, // Return the object containing leaderboards for each mode
+            leaderboards, // Return the object containing leaderboards for each mode
         });
     } catch (error) {
         sendErrorResponse(res, error);
