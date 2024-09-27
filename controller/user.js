@@ -71,7 +71,8 @@ exports.updateScore = async (req, res) => {
 // };
 exports.leaderBoard = async (req, res) => {
     try {
-        let { limit, mode } = req.query;
+        let limit = req.query.limit;
+        let mode = req.query.mode;
         limit = parseInt(limit) || 20;
         mode = parseInt(mode);
 
@@ -81,20 +82,33 @@ exports.leaderBoard = async (req, res) => {
 
         const modeForLeaderboard = `mode${mode}Score`;
 
-        // Fetch the leaderboard for the specified mode
+        // Check if the mode column exists in the UserProgress table
+        const columnExists = await UserProgress.describe();
+
+        if (!columnExists[modeForLeaderboard]) {
+            throw new ThrowError(`Mode ${mode} does not exist in the database`, 404);
+        }
+
+        // Call the service function to retrieve the top scores based on the provided number of entries
         const leaderboard = await UserProgress.findAll({
             attributes: ['userName', [modeForLeaderboard, 'score']], // Dynamic column alias as 'score'
             order: [[modeForLeaderboard, 'DESC']], // Order by the dynamic mode score
             limit: limit,
         });
 
-        // Return the retrieved leaderboard as a response
+        // Return the retrieved scores as a response
         res.json({
             success: true,
             message: 'LeaderBoard fetched successfully',
-            leaderboard
+            leaderboard: leaderboard.map(entry => ({
+                userName: entry.userName,
+                score: entry.get('score'), // Retrieve the dynamic score
+                mode: mode // Include the mode in the response
+            })),
         });
     } catch (error) {
         sendErrorResponse(res, error);
     }
 };
+
+
