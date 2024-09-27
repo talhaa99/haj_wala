@@ -11,6 +11,22 @@ exports.register = async (userName) => {
 
     // register a new user
     user = await User.create({userName});
+
+    const leaderboardTypes = {
+        1: "a",
+        2: "b",
+        3: "c"
+    };
+
+    for (let i = 1; i <= 6; i++) {
+        for (let j = 1; j <= 3; j++) {
+            await UserProgress.create({
+                userId: user.id,
+                mode: `${i}${leaderboardTypes[j]}`
+            });
+        }
+    }
+
     return {success: true, message: 'User registered successfully.', data: {user}};
 };
 
