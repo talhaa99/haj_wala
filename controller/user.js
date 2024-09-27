@@ -39,7 +39,7 @@ exports.updateScore = async (req, res) => {
 exports.leaderBoard = async (req, res) => {
     try {
         let limit = req.query.limit;
-        let mode = req.query.mode; // Expect a base mode as a query parameter, e.g., ?mode=1
+        let mode = req.query.mode;
         limit = parseInt(limit) || 20;
 
         if (!mode) {
@@ -47,14 +47,15 @@ exports.leaderBoard = async (req, res) => {
         }
 
         // Construct the array of modes based on the base mode
-        const baseMode = parseInt(mode);
-        const modes = [`${baseMode}a`, `${baseMode}b`, `${baseMode}c`];
+        mode = parseInt(mode);
 
+        const modes = [`${mode}a`, `${mode}b`, `${mode}c`];
         // Initialize an object to hold the leaderboards for each mode
+        // to set the key of object we use this method
         const leaderboards = {
-            [`${baseMode}a`]: [],
-            [`${baseMode}b`]: [],
-            [`${baseMode}c`]: [],
+            [`leaderboard${mode}a`]: [],
+            [`leaderboard${mode}b`]: [],
+            [`leaderboard${mode}c`]: [],
         };
 
         // Fetch leaderboard for each mode
@@ -67,8 +68,7 @@ exports.leaderBoard = async (req, res) => {
                 order: [['score', 'DESC']], // Order by score in descending order
                 limit: limit, // Limit the number of results
             });
-
-            // Map the fetched leaderboard to include userName
+            // // Map the fetched leaderboard to include userName
             const formattedLeaderboard = leaderboard.map(entry => ({
                 score: entry.score,
                 mode: entry.mode,
@@ -76,18 +76,17 @@ exports.leaderBoard = async (req, res) => {
             }));
 
             // Store the formatted leaderboard in the respective array
-            leaderboards[m]= formattedLeaderboard;
+            leaderboards[`leaderboard${m}`] = formattedLeaderboard;
         }
 
         res.json({
             success: true,
             message: 'LeaderBoards fetched successfully',
-            leaderboards, // Return the object containing leaderboards for each mode
+            leaderboards,
         });
     } catch (error) {
         sendErrorResponse(res, error);
     }
 };
-
 
 
