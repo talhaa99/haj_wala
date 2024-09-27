@@ -48,14 +48,13 @@ exports.leaderBoard = async (req, res) => {
 
         // Construct the array of modes based on the base mode
         mode = parseInt(mode);
-
         const modes = [`${mode}a`, `${mode}b`, `${mode}c`];
+
         // Initialize an object to hold the leaderboards for each mode
-        // to set the key of object we use this method
         const leaderboards = {
-            [`leaderboard${mode}a`]: [],
-            [`leaderboard${mode}b`]: [],
-            [`leaderboard${mode}c`]: [],
+            leaderboardA: [],
+            leaderboardB: [],
+            leaderboardC: [],
         };
 
         // Fetch leaderboard for each mode
@@ -68,7 +67,8 @@ exports.leaderBoard = async (req, res) => {
                 order: [['score', 'DESC']], // Order by score in descending order
                 limit: limit, // Limit the number of results
             });
-            // // Map the fetched leaderboard to include userName
+
+            // Map the fetched leaderboard to include userName
             const formattedLeaderboard = leaderboard.map(entry => ({
                 score: entry.score,
                 mode: entry.mode,
@@ -76,17 +76,26 @@ exports.leaderBoard = async (req, res) => {
             }));
 
             // Store the formatted leaderboard in the respective array
-            leaderboards[`leaderboard${m}`] = formattedLeaderboard;
+            // Map leaderboard1a, leaderboard1b, leaderboard1c to leaderboarda, leaderboardb, leaderboardc
+            if (m === `${mode}a`) {
+                leaderboards.leaderboardA = formattedLeaderboard;
+            } else if (m === `${mode}b`) {
+                leaderboards.leaderboardB = formattedLeaderboard;
+            } else if (m === `${mode}c`) {
+                leaderboards.leaderboardC = formattedLeaderboard;
+            }
         }
 
         res.json({
             success: true,
-            message: 'LeaderBoards fetched successfully',
+            message: 'Leaderboards fetched successfully',
             leaderboards,
         });
     } catch (error) {
         sendErrorResponse(res, error);
     }
 };
+
+
 
 
