@@ -62,6 +62,10 @@ exports.leaderBoard = async (req, res) => {
                 },
                 order: [['score', 'DESC']], // Order by score in descending order
                 limit: limit, // Limit the number of results
+                include: [{
+                    model: User, // Include the User model
+                    attributes: ['userName'], // Fetch the user's name,
+                }],
             });
 
             // Map the fetched leaderboard to include userName

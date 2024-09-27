@@ -8,4 +8,4 @@ const User = sequelize.define('User', {
     }
 });
 
-module.exports = User;
+module.exports = User; // Make sure you are exporting the User model

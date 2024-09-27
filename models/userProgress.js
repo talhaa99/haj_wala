@@ -1,9 +1,9 @@
-const {DataTypes} = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../config');
-const User = require('./user');
+const User = require('./user'); // Correctly import User
 
 const UserProgress = sequelize.define('UserProgress', {
-    userId: { // 1
+    userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -11,16 +11,18 @@ const UserProgress = sequelize.define('UserProgress', {
             key: 'id',   // Assuming 'id' is the primary key in the User table
         }
     },
-    mode: { // 1a
+    mode: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    score: { // 10
+    score: {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0,
     }
-
 });
+
+// Make sure the association is defined after User and UserProgress are properly set up
+UserProgress.belongsTo(User, { foreignKey: 'userId' }); // Associate UserProgress with User
 
 module.exports = UserProgress;
