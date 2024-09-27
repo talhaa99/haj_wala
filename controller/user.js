@@ -48,44 +48,30 @@ exports.leaderBoard = async (req, res) => {
 
         // Construct the array of modes based on the base mode
         mode = parseInt(mode);
-        const modes = [`${mode}a`, `${mode}b`, `${mode}c`];
+        const modes = ["A", "B", "C"];
 
         // Initialize an object to hold the leaderboards for each mode
-        const leaderboards = {
-            leaderboardA: [],
-            leaderboardB: [],
-            leaderboardC: [],
-        };
+        const leaderboards = {};
 
         // Fetch leaderboard for each mode
         for (const m of modes) {
-            const leaderboard = await UserProgress.findAll({
+            leaderboards[`leaderboard${m}`]  = await UserProgress.findAll({
                 attributes: ['score', 'mode', 'userId'],
                 where: {
-                    mode: m, // Filter by the current mode
+                    mode: `${mode}${m.toLowerCase()}`, // Filter by the current mode
                 },
                 order: [['score', 'DESC']], // Order by score in descending order
                 limit: limit, // Limit the number of results
             });
 
             // Map the fetched leaderboard to include userName
-            const formattedLeaderboard = leaderboard.map(entry => ({
-                score: entry.score,
-                mode: entry.mode,
-                userId: entry.userId,
-            }));
-
-            // Store the formatted leaderboard in the respective array
-            // Map leaderboard1a, leaderboard1b, leaderboard1c to leaderboarda, leaderboardb, leaderboardc
-            if (m === `${mode}a`) {
-                leaderboards.leaderboardA = formattedLeaderboard;
-            } else if (m === `${mode}b`) {
-                leaderboards.leaderboardB = formattedLeaderboard;
-            } else if (m === `${mode}c`) {
-                leaderboards.leaderboardC = formattedLeaderboard;
-            }
+            // const formattedLeaderboard = leaderboard.map(entry => ({
+            //     score: entry.score,
+            //     mode: entry.mode,
+            //     userId: entry.userId,
+            // }));
         }
-
+        
         res.json({
             success: true,
             message: 'Leaderboards fetched successfully',
