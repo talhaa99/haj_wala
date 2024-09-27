@@ -5,6 +5,7 @@ const app = express();
 
 app.get('/', (req, res) => {
     res.send('Cannot Get!');
+    
 });
 app.use(express.json());
 app.use('/api', userRoutes);
